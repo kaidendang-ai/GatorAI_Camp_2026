@@ -69,13 +69,19 @@ class DialogueSystem:
             self.box_height,
         )
 
-    def start_dialogue(self, character_id: str, player_context: dict, on_finish=None):
+    def start_dialogue(self, character_id: str, player_context: dict = None, dialogue_lines: list = None, on_finish=None):
         """Begin a dialogue session with an NPC."""
         self.active = True
         self.dialogue_index = 0
         self.on_finish_callback = on_finish
 
-        if self.ai_enabled and self.ai_manager:
+        if dialogue_lines:
+            # If explicit dialogue lines are passed (e.g. from custom NPCs), use them
+            self.current_dialogue = []
+            for paragraph in dialogue_lines:
+                pages = self._wrap_text(paragraph, self.text_box_rect.width - 40)
+                self.current_dialogue.extend(pages)
+        elif self.ai_enabled and self.ai_manager and player_context:
             # Generate dialogue using AI
             dialogue_line = self.ai_manager.generate_npc_dialogue(
                 character_name=player_context.get("npc_name", "NPC"),
@@ -98,9 +104,11 @@ class DialogueSystem:
 
     def _get_static_fallback(self, character_id: str) -> str:
         """Provides a simple, static fallback dialogue for NPCs."""
+        # @STUDENT-EDIT-Day3-1: Add a new greeting to this dictionary
         fallbacks = {
             "trader": "Welcome, friend! I have many fine goods for a hardworking farmer like you. Let's see what you need."
         }
+        # @STUDENT-EDIT-Day4-1: Create a branching conversation option here by returning a list instead if needed
         return fallbacks.get(character_id, "Hello there! Nice day for farming.")
 
     def _wrap_text(self, text, max_width):

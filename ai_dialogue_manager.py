@@ -25,6 +25,7 @@ class AIDialogueManager:
             print("🔄 AI Manager initialized in offline mode (OpenAI not available).")
             return
 
+        # @STUDENT-EDIT-Week2_Day3-1: Add your API key in the ai_materials/navigator_api_key.json file (Remember: don't commit it!)
         self.credentials = self._load_api_credentials(key_file_path)
 
         if self.credentials:
@@ -98,6 +99,7 @@ class AIDialogueManager:
 
         emotion_hint = emotion_guidance.get(emotion, emotion_guidance["neutral"])
 
+        # @STUDENT-EDIT-Week2_Day4-1: Change the prompt below to give the AI a different personality or custom instructions!
         prompt = f"""
         You are {character_name}, a {character_role} in a cozy farming game called PyDew Valley.
 

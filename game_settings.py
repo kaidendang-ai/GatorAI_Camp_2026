@@ -1,9 +1,12 @@
 import json
 import pygame
-import cv2
 
 # File path for settings
 SETTINGS_FILE = "settings.json"
+
+# Cached settings and camera discovery results
+_settings_cache = None
+_camera_list_cache = None
 
 # Default settings
 DEFAULT_SETTINGS = {
@@ -21,18 +24,23 @@ current_player = None
 current_overlay = None
 
 
-def load_settings():
-    """Load settings from JSON file, create default if not exists"""
+def load_settings(force_reload=False):
+    """Load settings from JSON file, create default if not exists."""
+    global _settings_cache
+    if _settings_cache is not None and not force_reload:
+        return _settings_cache
+
     try:
         with open(SETTINGS_FILE, "r") as f:
             settings = json.load(f)
-            # Ensure all required keys exist
             for key, default_value in DEFAULT_SETTINGS.items():
                 if key not in settings:
                     settings[key] = default_value
-            return settings
+            _settings_cache = settings
     except (FileNotFoundError, json.JSONDecodeError):
-        return DEFAULT_SETTINGS.copy()
+        _settings_cache = DEFAULT_SETTINGS.copy()
+
+    return _settings_cache
 
 
 def save_settings(settings):
@@ -45,15 +53,18 @@ def save_settings(settings):
 
 
 def get(key, default=None):
-    """Get a setting value"""
+    """Get a setting value."""
     settings = load_settings()
     return settings.get(key, default)
 
 
 def set(key, value):
-    """Set a setting value and save to file"""
+    """Set a setting value and save to file."""
+    global _camera_list_cache
     settings = load_settings()
     settings[key] = value
+    if key in ("enable_camera", "camera_index"):
+        _camera_list_cache = None
     save_settings(settings)
 
 
@@ -106,15 +117,36 @@ def get_volume_percentage(volume_type):
 
 
 def detect_available_cameras():
-    """Detect all available cameras and return their indices and names"""
-    available_cameras = []
+    """Detect all available cameras and return their indices and names."""
+    global _camera_list_cache
+    if not get("enable_camera", True):
+        return [
+            {
+                "index": get("camera_index", 0),
+                "name": f"Camera {get('camera_index', 0)}",
+            }
+        ]
 
-    # Test up to 10 camera indices (should be more than enough)
+    if _camera_list_cache is not None:
+        return _camera_list_cache
+
+    try:
+        import cv2
+    except ImportError:
+        print("⚠️ OpenCV not installed; camera detection skipped.")
+        _camera_list_cache = [
+            {
+                "index": get("camera_index", 0),
+                "name": f"Camera {get('camera_index', 0)}",
+            }
+        ]
+        return _camera_list_cache
+
+    available_cameras = []
     for i in range(10):
         try:
             cap = cv2.VideoCapture(i)
             if cap.isOpened():
-                # Try to read a frame to verify the camera works
                 ret, frame = cap.read()
                 if ret and frame is not None:
                     available_cameras.append(
@@ -126,16 +158,21 @@ def detect_available_cameras():
                     )
                 cap.release()
             else:
-                # If we can't open the camera, stop searching
-                if i > 2:  # Only stop after checking first few indices
+                if i > 2:
                     break
         except Exception as e:
             print(f"Error checking camera {i}: {e}")
             continue
 
     if not available_cameras:
-        available_cameras.append({"index": 0, "name": "Default Camera"})
+        available_cameras = [
+            {
+                "index": get("camera_index", 0),
+                "name": f"Camera {get('camera_index', 0)}",
+            }
+        ]
 
+    _camera_list_cache = available_cameras
     return available_cameras
 
 
@@ -145,15 +182,14 @@ def get_camera_index():
 
 
 def set_camera_index(index):
-    """Set the camera index and save to settings"""
-    settings = load_settings()
-    settings["camera_index"] = index
-    save_settings(settings)
+    """Set the camera index and save to settings."""
+    set("camera_index", index)
 
 
 def get_camera_name(index):
-    """Get a friendly name for a camera index"""
-    cameras = detect_available_cameras()
+    """Get a friendly name for a camera index."""
+    global _camera_list_cache
+    cameras = _camera_list_cache or []
     for camera in cameras:
         if camera["index"] == index:
             return camera["name"]

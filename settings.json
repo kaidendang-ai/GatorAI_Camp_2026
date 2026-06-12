@@ -4,6 +4,6 @@
   "sfx_volume": 0.8,
   "fullscreen": false,
   "camera_index": 1,
-  "enable_camera": false,
-  "enable_ai_dialogue": false
+  "enable_camera": true,
+  "enable_ai_dialogue": true
 }

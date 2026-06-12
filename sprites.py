@@ -127,3 +127,11 @@ class Tree(Generic):
 					surf = self.apple_surf, 
 					groups = [self.apple_sprites,self.groups()[0]],
 					z = LAYERS['fruit'])
+
+class NPC(Generic):
+	def __init__(self, pos, surf, name, dialogue, groups):
+		super().__init__(pos, surf, groups)
+		self.name = name
+		self.dialogue = dialogue
+		# Setup a hitbox for collisions and interaction range
+		self.hitbox = self.rect.copy().inflate(-self.rect.width * 0.2, -self.rect.height * 0.2)

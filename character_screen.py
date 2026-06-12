@@ -48,8 +48,4 @@ class CharacterScreen:
         self.visible = not self.visible
 
     def update(self):
-        if self.visible:
-            self.display()
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_ESCAPE]:
-                self.toggle()
+        pass

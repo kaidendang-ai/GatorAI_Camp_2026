@@ -83,6 +83,7 @@ class Level:
         self.all_sprites = CameraGroup()  # Custom camera-following sprite group
         self.collision_sprites = pygame.sprite.Group()  # Objects that block movement
         self.tree_sprites = pygame.sprite.Group()  # Trees that can be chopped
+        self.npc_sprites = pygame.sprite.Group()  # Custom NPCs
         self.interaction_sprites = (
             pygame.sprite.Group()
         )  # Objects player can interact with
@@ -213,6 +214,9 @@ class Level:
                     interaction=self.interaction_sprites,
                     soil_layer=self.soil_layer,
                     toggle_shop=self.toggle_shop,
+                    npc_sprites=self.npc_sprites,
+                    trigger_dialogue=self.trigger_npc_dialogue,
+                    shake_camera=self.shake_camera,
                 )
 
             if obj.name == "Bed":
@@ -241,6 +245,32 @@ class Level:
             groups=self.all_sprites,
             z=LAYERS["ground"],  # Put it at the bottom layer
         )
+
+        # Spawn custom NPCs configured in settings.py
+        self.spawn_npcs()
+
+    def spawn_npcs(self):
+        """Spawn custom NPCs defined in settings.py NPC_DATA configuration."""
+        from sprites import NPC
+        for npc_name, data in NPC_DATA.items():
+            NPC(
+                pos=data["pos"],
+                surf=pygame.image.load(data["graphic"]).convert_alpha(),
+                name=npc_name,
+                dialogue=data["dialogue"],
+                groups=[self.all_sprites, self.collision_sprites, self.npc_sprites]
+            )
+
+    def trigger_npc_dialogue(self, name, lines):
+        """Callback to start custom static dialogue."""
+        self.dialogue_system.start_dialogue(
+            character_id=name,
+            dialogue_lines=lines
+        )
+
+    def shake_camera(self):
+        """Callback to trigger a subtle screen shake."""
+        self.all_sprites.shake(duration=0.15, intensity=3)
 
     def update_audio_volumes(self):
         """
@@ -426,14 +456,13 @@ class Level:
         """
         Main Game Loop Update
         ====================
-        Called every frame to update and render the game world.
+        Called every frame to update the game world state.
 
         EDUCATIONAL CONCEPTS:
-        - Game loops and frame-based updates
-        - Conditional rendering based on game state
+        - Game loops and frame-based state updates
         - Delta time for frame-independent movement
         - System prioritization (UI vs gameplay)
-        - Event handling and input prioritization
+        - Event propagation and input prioritization
 
         Parameters:
         dt (float): Delta time - time since last frame in seconds
@@ -448,14 +477,15 @@ class Level:
                 if event.key == pygame.K_ESCAPE and self.shop_active:
                     self.shop_active = False
 
-        # RENDERING - Draw the world
-        self.display_surface.fill("black")
-        self.all_sprites.custom_draw(self.player)
+        # Update camera shake
+        if self.all_sprites.shake_timer > 0:
+            self.all_sprites.shake_timer -= dt
 
         # GAME LOGIC UPDATES - Priority order is important!
         if self.dialogue_system.active:
             # If dialogue is active, only update dialogue logic and consume events
-            self.dialogue_system.update(events)
+            if events:
+                self.dialogue_system.input(events)
             # Don't process other game logic while dialogue is active
         elif self.shop_active:
             # If shop is open, only update the shop menu
@@ -466,21 +496,47 @@ class Level:
             self.plant_collision()
             self.soil_layer.update_plants(dt)
 
-        # UI AND VISUAL EFFECTS
-        self.overlay.display()
-
-        # Note: Dialogue rendering is handled in dialogue_system.update()
-
         # Weather effects (only during normal gameplay)
         if self.raining and not self.shop_active and not self.dialogue_system.active:
             self.rain.update()
 
         # Sky color transitions (day/night cycle)
-        self.sky.display(dt)
+        self.sky.update(dt)
 
         # TRANSITION EFFECTS
         if self.player.sleep:
-            self.transition.play()
+            self.transition.update()
+
+    def display(self):
+        """
+        Main Game Loop Render Pass
+        ==========================
+        Draws the game world, active overlays, menus, and transition effects onto the screen.
+
+        EDUCATIONAL CONCEPTS:
+        - View rendering/drawing pass
+        - Z-layered drawing
+        - UI and transitions overlay rendering
+        """
+        # RENDERING - Draw the world
+        self.display_surface.fill("black")
+        self.all_sprites.custom_draw(self.player)
+
+        # Draw active interface elements on top of the world
+        if self.dialogue_system.active:
+            self.dialogue_system.draw()
+        elif self.shop_active:
+            self.menu.display()
+
+        # UI AND VISUAL EFFECTS
+        self.overlay.display()
+
+        # Sky color transitions (day/night cycle)
+        self.sky.display()
+
+        # TRANSITION EFFECTS
+        if self.player.sleep:
+            self.transition.display()
 
 
 class CameraGroup(pygame.sprite.Group):
@@ -507,6 +563,14 @@ class CameraGroup(pygame.sprite.Group):
         super().__init__()  # Initialize the parent sprite group
         self.display_surface = pygame.display.get_surface()
         self.offset = pygame.math.Vector2()  # Camera offset from world origin
+        self.shake_duration = 0
+        self.shake_intensity = 0
+        self.shake_timer = 0
+
+    def shake(self, duration=0.15, intensity=3):
+        self.shake_duration = duration
+        self.shake_intensity = intensity
+        self.shake_timer = duration
 
     def custom_draw(self, player):
         """
@@ -528,6 +592,12 @@ class CameraGroup(pygame.sprite.Group):
         # Center the camera on the player
         self.offset.x = player.rect.centerx - SCREEN_WIDTH / 2
         self.offset.y = player.rect.centery - SCREEN_HEIGHT / 2
+
+        # Apply screen shake if active
+        if self.shake_timer > 0:
+            import random
+            self.offset.x += random.randint(-self.shake_intensity, self.shake_intensity)
+            self.offset.y += random.randint(-self.shake_intensity, self.shake_intensity)
 
         # LAYERED RENDERING
         # Draw sprites in layer order for proper visual layering

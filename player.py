@@ -44,6 +44,9 @@ class Player(pygame.sprite.Sprite):
         interaction,  # Function to handle interactions
         soil_layer,  # Farming/soil system
         toggle_shop,  # Function to open/close shop
+        npc_sprites,  # Custom NPCs
+        trigger_dialogue,  # Callback to trigger dialogue
+        shake_camera,  # Callback to shake camera
     ):
         """
         Initialize the Player - Set Up Our Character
@@ -120,7 +123,10 @@ class Player(pygame.sprite.Sprite):
         self.interaction = interaction  # Function for interacting with objects
         self.sleep = False  # Is the player sleeping?
         self.soil_layer = soil_layer  # Farming system reference
-        self.toggle_shop = toggle_shop  # Function to open/close shop        # AUDIO SYSTEM - Sound effects for player actions
+        self.toggle_shop = toggle_shop  # Function to open/close shop
+        self.npc_sprites = npc_sprites  # Custom NPCs group
+        self.trigger_dialogue = trigger_dialogue  # Callback to start NPC dialogue
+        self.shake_camera = shake_camera  # Callback to shake camera        # AUDIO SYSTEM - Sound effects for player actions
         base_path = os.path.dirname(os.path.abspath(__file__))
         self.watering = pygame.mixer.Sound(os.path.join(base_path, "audio/water.mp3"))
         self.update_audio_volumes()  # Set initial volume levels
@@ -186,6 +192,7 @@ class Player(pygame.sprite.Sprite):
                 # Check if the mouse/target position is inside the tree's rectangle
                 if tree.rect.collidepoint(self.target_pos):
                     tree.damage()  # Tell the tree it has been damaged
+                    self.shake_camera()  # Shake screen when chopping!
 
         if self.selected_tool == "water":
             # The water tool is used for watering crops
@@ -432,21 +439,28 @@ class Player(pygame.sprite.Sprite):
                 self.selected_seed = self.seeds[self.seed_index]
 
             # INTERACTION
-            # Interact with objects like shops or beds
+            # Interact with objects like shops, beds, or NPCs
             if keys[pygame.K_RETURN]:
-                # Check if the player is touching any interactive objects
-                collided_interaction_sprite = pygame.sprite.spritecollide(
-                    self, self.interaction, False
-                )
-                # If we found an interactive object
-                if collided_interaction_sprite:
-                    # Check what type of object it is
-                    if collided_interaction_sprite[0].name == "Trader":
-                        # Open the shop interface
-                        self.toggle_shop()
-                    else:  # For beds or other objects, make the player sleep
-                        self.status = "left_idle"
-                        self.sleep = True
+                # Check for NPC interaction first
+                collided_npc = pygame.sprite.spritecollide(self, self.npc_sprites, False)
+                if collided_npc:
+                    npc = collided_npc[0]
+                    self.trigger_dialogue(npc.name, npc.dialogue)
+                    self.direction = pygame.math.Vector2()  # Stop movement during dialogue
+                else:
+                    # Check if the player is touching any interactive objects (Bed, Trader, etc.)
+                    collided_interaction_sprite = pygame.sprite.spritecollide(
+                        self, self.interaction, False
+                    )
+                    # If we found an interactive object
+                    if collided_interaction_sprite:
+                        # Check what type of object it is
+                        if collided_interaction_sprite[0].name == "Trader":
+                            # Open the shop interface
+                            self.toggle_shop()
+                        else:  # For beds or other objects, make the player sleep
+                            self.status = "left_idle"
+                            self.sleep = True
 
     def get_status(self):
         """

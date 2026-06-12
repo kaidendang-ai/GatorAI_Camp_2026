@@ -92,6 +92,7 @@ class EmotionDetector(threading.Thread):
 
     def _load_model(self):
         """Loads the trained emotion recognition model."""
+        # @STUDENT-EDIT-Week2_Day2-1: Change the path to point to your captured image folder or model if you trained your own
         model_path = os.path.join("ai_materials", "emotion_model.pth")
         if not os.path.exists(model_path):
             print(f"❌ Error: Model file not found at {model_path}")
@@ -235,6 +236,7 @@ class EmotionDetector(threading.Thread):
 
                             with torch.no_grad():
                                 output = self.model(image_tensor)
+                                # @STUDENT-EDIT-Week2_Day2-2: Adjust the confidence threshold for emotion detection here if needed
                                 pred_idx = torch.argmax(output, dim=1).item()
                                 emotion = self.emotion_names[pred_idx]
                                 self.emotions_deque.append(emotion)

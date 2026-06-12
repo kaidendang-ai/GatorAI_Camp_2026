@@ -20,6 +20,8 @@ from pygame.math import Vector2
 
 SCREEN_WIDTH = 1280  # Width of game window in pixels
 SCREEN_HEIGHT = 720  # Height of game window in pixels
+# @STUDENT-EDIT-Day1-1: Change TITLE to your own game name
+TITLE = "PyDew Valley: GAIC 26"
 TILE_SIZE = 64  # Size of each tile in our game world (pixels)
 
 # =============================================================================
@@ -115,3 +117,26 @@ PURCHASE_PRICES = {
     "corn": 4,  # Corn seeds cost 4 coins
     "tomato": 5,  # Tomato seeds cost 5 coins
 }
+
+# =============================================================================
+# NPC CONFIGURATION
+# =============================================================================
+# Students can easily add new characters to the game here!
+# @STUDENT-EDIT-Day2-1: Add your custom sprite image name to the character list
+# For each NPC, define:
+# - name: Display name of the character
+# - pos: Grid coordinates or pixel coordinates (x, y)
+# - graphic: Path to the character's image
+# - dialogue: A list of lines/paragraphs the character says when spoken to
+NPC_DATA = {
+    "Robin": {
+        "pos": (800, 400),
+        "graphic": "graphics/objects/merchant.png",  # Placeholder using existing asset
+        "dialogue": [
+            "Hi there! Welcome to PyDew Valley!",
+            "I'm Robin, a helper NPC created using Python classes.",
+            "Try editing settings.py to change what I say, or create your own custom NPC!"
+        ]
+    }
+}
+

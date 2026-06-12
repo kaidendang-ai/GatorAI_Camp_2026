@@ -14,7 +14,7 @@ class Sky:
 		self.elapsed_time = 0
 		self.phase = 'day_to_night'  # Initial phase
 
-	def display(self, dt):
+	def update(self, dt):
 		self.elapsed_time += dt
 		progress = min(self.elapsed_time / self.cycle_duration, 1)
 
@@ -31,8 +31,10 @@ class Sky:
 				self.phase = 'day_to_night'
 				self.elapsed_time = 0
 
+	def display(self):
 		self.full_surf.fill(self.start_color)
 		self.display_surface.blit(self.full_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
 
 class Drop(Generic):
 	def __init__(self, surf, pos, moving, groups, z):

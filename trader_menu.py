@@ -156,6 +156,8 @@ class TraderMenu:
 
     def update(self):
         self.input()
+
+    def display(self):
         self.display_money()
 
         for text_index, text_surf in enumerate(self.text_surfs):
