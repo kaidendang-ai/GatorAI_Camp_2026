@@ -5,7 +5,9 @@ import game_settings
 
 
 class SettingsMenu:
+    """In-game/options settings screen: volumes, camera, and AI toggles."""
     def __init__(self, camera_change_callback=None):
+        """Build the list of settings rows and set up fonts, state, and the indicator."""
         self.display_surface = pygame.display.get_surface()
         self.font = pygame.font.Font("font/LycheeSoda.ttf", 32)
         self.title_font = pygame.font.Font("font/LycheeSoda.ttf", 60)
@@ -29,9 +31,11 @@ class SettingsMenu:
 
         self.selected_index = 0
         self.input_timer = Timer(150)
+        self.input_timer.activate()  # Activate timer immediately to prevent processing the opening ESC
 
-        # Camera detection
-        self.available_cameras = game_settings.detect_available_cameras()
+        # Camera detection will only run when the player interacts with camera settings
+        self.available_cameras = None
+        self.cameras_loaded_once = False  # Prevent camera detection on first frame
 
         # Load corn graphic for selection indicator
         import os
@@ -42,7 +46,9 @@ class SettingsMenu:
         ).convert_alpha()
 
     def display(self):
-        self.display_surface.fill("black")
+        """Draw the title, every settings row with its control, and the instructions."""
+        # Don't fill with black - let the caller handle the background
+        # This allows the menu to be drawn on top of the game world
 
         # Title
         title_surf = self.title_font.render("Settings", True, "White")
@@ -122,13 +128,55 @@ class SettingsMenu:
         percent_rect = percent_surf.get_rect(center=(bar_x + bar_width + 60, y_pos))
         self.display_surface.blit(percent_surf, percent_rect)
 
+    def load_available_cameras(self):
+        """Load available cameras lazily when the player opens camera settings."""
+        if self.available_cameras is not None:
+            return self.available_cameras
+
+        if not game_settings.get("enable_camera", True):
+            self.available_cameras = [
+                {
+                    "index": game_settings.get_camera_index(),
+                    "name": game_settings.get_camera_name(
+                        game_settings.get_camera_index()
+                    ),
+                }
+            ]
+        else:
+            self.available_cameras = game_settings.detect_available_cameras()
+
+        if not self.available_cameras:
+            self.available_cameras = [
+                {
+                    "index": game_settings.get_camera_index(),
+                    "name": game_settings.get_camera_name(
+                        game_settings.get_camera_index()
+                    ),
+                }
+            ]
+
+        return self.available_cameras
+
     def draw_camera_control(self, option, y_pos, is_selected):
         """Draw camera selection control"""
         current_camera_index = game_settings.get_camera_index()
+        
+        # Skip loading cameras on the very first frame to prevent hangs
+        if not self.cameras_loaded_once:
+            cameras = [
+                {
+                    "index": current_camera_index,
+                    "name": game_settings.get_camera_name(current_camera_index),
+                }
+            ]
+            self.cameras_loaded_once = True
+        else:
+            cameras = self.load_available_cameras()
+        
         current_camera = next(
             (
                 cam
-                for cam in self.available_cameras
+                for cam in cameras
                 if cam["index"] == current_camera_index
             ),
             {"name": f"Camera {current_camera_index}"},
@@ -142,7 +190,7 @@ class SettingsMenu:
         self.display_surface.blit(camera_surf, camera_rect)
 
         # Show arrows if more than one camera available
-        if len(self.available_cameras) > 1 and is_selected:
+        if len(cameras) > 1 and is_selected:
             arrow_color = "Yellow" if is_selected else "Gray"
             # Left arrow
             left_arrow = self.font.render("<", True, arrow_color)
@@ -169,6 +217,7 @@ class SettingsMenu:
         self.display_surface.blit(toggle_surf, toggle_rect)
 
     def input(self):
+        """Handle navigation and edits; return "back" when leaving, else None."""
         keys = pygame.key.get_pressed()
         self.input_timer.update()
 
@@ -198,7 +247,9 @@ class SettingsMenu:
                 self.input_timer.activate()
             elif current_option["type"] == "camera":
                 current_index = game_settings.get_camera_index()
-                camera_indices = [cam["index"] for cam in self.available_cameras]
+                # Load cameras when player tries to change them
+                self.cameras_loaded_once = True
+                camera_indices = [cam["index"] for cam in self.load_available_cameras()]
                 if current_index in camera_indices:
                     current_pos = camera_indices.index(current_index)
                 else:
@@ -217,6 +268,8 @@ class SettingsMenu:
                 # Toggle the boolean value
                 current_value = game_settings.get(current_option["key"], True)
                 game_settings.set(current_option["key"], not current_value)
+                if current_option["key"] == "enable_camera":
+                    self.available_cameras = None
                 self.input_timer.activate()
 
         # Selection
@@ -233,6 +286,6 @@ class SettingsMenu:
         return None
 
     def update(self):
+        """Process input and return its result ("back" or None); drawing is done by the caller."""
         result = self.input()
-        self.display()
         return result

@@ -2,7 +2,7 @@
 PyDew Valley - Educational Game for Learning Python
 ==================================================
 This is the main game file that starts and runs our farming simulation game.
-Students will learn Python concepts through game development!
+We will learn Python concepts through game development!
 
 Educational Concepts Covered:
 - Classes and Object-Oriented Programming
@@ -11,17 +11,20 @@ Educational Concepts Covered:
 - Module imports and organization
 """
 
+# [1] Main game entry point with module imports and installation
+
 # Import required modules for our game
 from installer import install
 
 # Install required packages if they're not already installed
-install("pygame")  # Game development library
-install("pytmx")  # Map loading library
-install("kagglehub")  # Dataset library
-install("requests")  # Library for web requests
-install("opencv-python")  # Computer vision library
-install("pytorch_lightning")
-install("openai")  # AI API library for dialogue generation
+# install("pygame-ce")  # Game development library (community fork, imports as "pygame")
+# install("pytmx")  # Map loading library
+# install("kagglehub")  # Dataset library
+# install("requests")  # Library for web requests
+# install("opencv-python")  # Computer vision library
+# install("torchvision")
+# install("pytorch_lightning")
+# install("openai")  # AI API library for dialogue generation
 
 import pygame  # Main game development library
 import sys  # System operations
@@ -29,11 +32,8 @@ import os  # Operating system interface
 
 # Import our custom game modules
 from settings import *  # Game configuration settings
-from level import Level  # Game world and gameplay
 from main_menu import MainMenu  # Main menu system
-from character_screen import CharacterScreen  # Player information screen
 import game_settings  # Audio and game settings
-from emotion_detector import EmotionDetector
 from collections import deque
 
 
@@ -50,22 +50,19 @@ class Game:
     Think of this as the "manager" that coordinates everything!
     """
 
+    # [2] Game class structure; shows class definition, initialization with pygame setup
+
     def __init__(self):
-        """
-        Initialize the Game - Set Up Everything We Need
-        ==============================================
-        This method runs when we create a new Game object.
-        It sets up pygame, creates the window, and prepares our game.
-        """
-        # Initialize pygame - this must be done before using pygame features
+        """Start pygame, open the window, and set up the menu and game-state flags."""
+        # pygame.init() must run before any other pygame call
         pygame.init()
-        pygame.mixer.init()  # Initialize audio system for sound effects and music
+        pygame.mixer.init()  # audio system for sound effects and music
 
-        # Create the game window with specified dimensions
+        # Create the game window and title it
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("PyDew Valley: GAIC 26")  # Set window title
+        pygame.display.set_caption(TITLE)
 
-        # Create a clock to control frame rate (how fast the game runs)
+        # Clock caps the frame rate so the game runs at a steady speed
         self.clock = pygame.time.Clock()
 
         # Change to the directory where our game files are located
@@ -74,6 +71,9 @@ class Game:
         # Load game settings (like volume levels) from file
         game_settings.load_settings()
 
+        # Show a quick loading screen before the menu is fully built
+        self.show_loading_screen("Loading menu...")
+
         # Initialize game components
         self.level = None  # The game world (will be created when game starts)
         self.main_menu = MainMenu(
@@ -81,15 +81,71 @@ class Game:
         )  # Main menu screen
         self.character_screen = None  # Player stats screen (created when game starts)
         self.show_main_menu = True  # Flag to control which screen to show
+        self.show_settings_during_game = False  # Flag for in-game settings menu
+        self.settings_menu = None  # Settings menu (created when first needed)
 
         # Emotion Detection Setup
+        # Defer until actually needed in the game (not at startup to avoid heavy imports)
         self.emotions_deque = deque(maxlen=5)  # Store the last 5 detected emotions
         self.emotion_detector = None
-        if game_settings.get("enable_camera", True):
-            self.emotion_detector = EmotionDetector(
-                self.emotions_deque, show_camera_preview=False
+        # Don't import EmotionDetector at startup - too slow
+        # It will be created later when start_game() is called if camera is enabled
+
+        # @STUDENT-EDIT-Day1-5: Insert a print("Game starting!") statement here to see when the game starts
+
+    def show_loading_screen(self, message="Loading...", delay_ms=250):
+        """Display a loading screen with game title and animated loading bar."""
+        self.screen.fill("black")
+        try:
+            game_title_font = pygame.font.Font("font/LycheeSoda.ttf", 80)
+            message_font = pygame.font.Font("font/LycheeSoda.ttf", 36)
+            info_font = pygame.font.Font("font/LycheeSoda.ttf", 24)
+        except Exception:
+            game_title_font = pygame.font.SysFont(None, 80)
+            message_font = pygame.font.SysFont(None, 36)
+            info_font = pygame.font.SysFont(None, 24)
+
+        # Draw game title at top
+        game_title = game_title_font.render("PyDew Valley", True, "White")
+        subtitle = info_font.render("GAIC 26", True, (100, 200, 100))
+        title_rect = game_title.get_rect(
+            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 120)
+        )
+        subtitle_rect = subtitle.get_rect(
+            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 40)
+        )
+
+        self.screen.blit(game_title, title_rect)
+        self.screen.blit(subtitle, subtitle_rect)
+
+        # Draw current loading message
+        message_surface = message_font.render(message, True, "White")
+        message_rect = message_surface.get_rect(
+            center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 40)
+        )
+        self.screen.blit(message_surface, message_rect)
+
+        # Draw loading bar with simple progress
+        bar_width = 400
+        bar_height = 20
+        bar_x = (SCREEN_WIDTH - bar_width) / 2
+        bar_y = SCREEN_HEIGHT / 2 + 110
+
+        # Background bar
+        bg_rect = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
+        pygame.draw.rect(self.screen, (50, 50, 50), bg_rect)
+        pygame.draw.rect(self.screen, "White", bg_rect, 2)
+
+        # Fill bar partially
+        fill_width = int(bar_width * 0.7)
+        if fill_width > 0:
+            fill_rect = pygame.Rect(
+                bar_x + 2, bar_y + 2, fill_width - 4, bar_height - 4
             )
-        # self.emotion_detector.start() # We will start this in the run loop
+            pygame.draw.rect(self.screen, (100, 200, 100), fill_rect)
+
+        pygame.display.update()
+        pygame.time.delay(delay_ms)
 
     def start_game(self):
         """
@@ -97,11 +153,16 @@ class Game:
         ==========================================================
         This method creates the game world and player character screen.
         """
+        self.show_loading_screen("Loading world...")
+        from level import Level
+        from character_screen import CharacterScreen
+
         self.level = Level(self.emotions_deque)  # Create the game world
         self.character_screen = CharacterScreen(
             self.level.player
         )  # Create player info screen
         self.show_main_menu = False  # Hide main menu and show game
+        self.show_settings_during_game = False  # Reset settings menu flag
 
     def restart_emotion_detector(self):
         """Restart the emotion detector with new camera settings"""
@@ -111,30 +172,27 @@ class Game:
             self.emotion_detector.join(timeout=2.0)  # Wait for thread to stop
 
         # Create new emotion detector with updated settings
+        from emotion_detector import EmotionDetector
+
         self.emotion_detector = EmotionDetector(
             self.emotions_deque, show_camera_preview=False
         )
         self.emotion_detector.start()
 
     def run(self):
-        """
-        Main Game Loop - The Heart That Keeps Our Game Running
-        =====================================================
-        This is the main game loop that runs continuously until the player quits.
-        Every frame (many times per second), this loop:
-        1. Checks for player input (keyboard, mouse, window close)
-        2. Updates the game world or menu
-        3. Draws everything to the screen
+        """The main game loop: every frame, handle input, update state, then draw.
 
-        This is a fundamental concept in game programming!"""
+        Runs forever until the player quits. This input -> update -> draw cycle is
+        a fundamental game-programming concept.
+        """
         # Start the emotion detector thread once the main loop begins
         if self.emotion_detector and not self.emotion_detector.is_alive():
             self.emotion_detector.start()
 
         # Main game loop - runs until player quits
         while True:
-            # A small delay to ensure the main thread has priority
-            pygame.time.delay(10)
+            # Cap the frame rate to reduce CPU usage and keep game timing stable
+            delta_time = self.clock.tick(60) / 1000  # Convert milliseconds to seconds
 
             # EVENT HANDLING - Check what the player is doing
             events = pygame.event.get()
@@ -151,25 +209,74 @@ class Game:
                     event.type == pygame.KEYDOWN
                     and event.key == pygame.K_i
                     and self.character_screen
+                    and not self.show_settings_during_game
                 ):
                     self.character_screen.toggle()  # Show/hide character screen
 
-            # DELTA TIME - Calculate time since last frame (for smooth movement)
-            delta_time = self.clock.tick() / 1000  # Convert milliseconds to seconds
+                # Check if player pressed ESC to close submenus or open settings
+                if (
+                    event.type == pygame.KEYDOWN
+                    and event.key == pygame.K_ESCAPE
+                    and not self.show_main_menu
+                    and not self.show_settings_during_game
+                ):
+                    if self.character_screen and self.character_screen.visible:
+                        self.character_screen.toggle()  # Close inventory screen
+                    elif self.level and (
+                        self.level.shop_active or self.level.dialogue_system.active
+                    ):
+                        # Let level run/events handle closing dialogue or shop (avoid opening settings)
+                        pass
+                    else:
+                        self.show_settings_during_game = True
 
             # UPDATE GAME STATE - Decide what to update based on current screen
             if self.show_main_menu:
                 # We're showing the main menu
                 self.main_menu.update()
             else:
-                # We're in the main game - pass events for proper input handling
-                self.level.run(delta_time, events)  # Update game world
+                # We're in the main game
+                if self.show_settings_during_game:
+                    # Settings menu is open - create it if needed and handle it
+                    if self.settings_menu is None:
+                        from settings_menu import SettingsMenu
 
-                # If character screen is visible, update it too
-                if self.character_screen and self.character_screen.visible:
-                    self.character_screen.update()
+                        self.settings_menu = SettingsMenu(self.restart_emotion_detector)
+
+                    # Process input for settings menu
+                    # The input_timer in settings_menu prevents immediate processing of the opening ESC
+                    result = self.settings_menu.update()
+                    if result == "back":
+                        self.show_settings_during_game = False
+                        self.settings_menu = None
+                else:
+                    # Normal gameplay - pass events for proper input handling
+                    self.level.run(delta_time, events)  # Update game world
+
+                    # If character screen is visible, update it too
+                    if self.character_screen and self.character_screen.visible:
+                        self.character_screen.update()
 
             # RENDER - Draw everything to the screen
+            if self.show_main_menu:
+                # Draw the main menu (it fills the screen with black and draws menu items)
+                self.main_menu.display()
+            elif self.level is not None:
+                # Draw the game level
+                self.level.display()
+                # If character screen is visible, draw it on top
+                if self.character_screen and self.character_screen.visible:
+                    self.character_screen.display()
+                # If settings menu is open, draw it on top of the game with an overlay
+                if self.show_settings_during_game and self.settings_menu is not None:
+                    # Draw a semi-transparent overlay to dim the game world
+                    overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+                    overlay.set_alpha(128)
+                    overlay.fill((0, 0, 0))
+                    self.screen.blit(overlay, (0, 0))
+                    # Draw the settings menu on top
+                    self.settings_menu.display()
+
             pygame.display.update()  # Actually display what we've drawn
 
 

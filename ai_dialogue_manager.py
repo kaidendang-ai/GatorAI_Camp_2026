@@ -25,6 +25,7 @@ class AIDialogueManager:
             print("🔄 AI Manager initialized in offline mode (OpenAI not available).")
             return
 
+        # @STUDENT-EDIT-Week2_Day3-1: Add your API key in the ai_materials/navigator_api_key.json file (Remember: don't commit it!)
         self.credentials = self._load_api_credentials(key_file_path)
 
         if self.credentials:
@@ -98,6 +99,7 @@ class AIDialogueManager:
 
         emotion_hint = emotion_guidance.get(emotion, emotion_guidance["neutral"])
 
+        # @STUDENT-EDIT-Week2_Day4-1: Change the prompt below to give the AI a different personality or custom instructions!
         prompt = f"""
         You are {character_name}, a {character_role} in a cozy farming game called PyDew Valley.
 
@@ -116,18 +118,16 @@ class AIDialogueManager:
         Dialogue:
         """
 
-        # Debug: Print the prompt being sent to AI
-        print(f"🤖 AI Prompt Debug:")
-        print(f"   Character: {character_name} ({character_role})")
-        print(f"   Context: {player_context}")
-        print(f"   Emotion: {emotion}")
+        # @STUDENT-EDIT-Week2_Day5-2: Want to see what gets sent to the AI? Add
+        # print() statements here to inspect the character, context, and emotion.
 
         try:
             response = self.client.chat.completions.create(
-                model="llama-3.1-8b-instruct",
+                model="mistral-7b-instruct",
                 messages=[
                     {
                         "role": "system",
+                        # @STUDENT-EDIT-Week2_Day5-1: Fine-tune prompt engineering constraints before the final presentation (e.g. add new instructions here)
                         "content": "You are a helpful NPC in a farming simulation game. Keep responses brief, friendly, and appropriate for all ages.",
                     },
                     {"role": "user", "content": prompt},
@@ -144,6 +144,7 @@ class AIDialogueManager:
         self, character_name: str, player_context: str, emotion: str
     ) -> str:
         """Provides static fallback dialogue when the AI service is unavailable."""
+        # @STUDENT-EDIT-Week2_Day4-2: Create custom fallback responses for when the API is down
         # Simple fallback logic for Merchant Pete with emotion considerations
         if "Merchant Pete" in character_name:
             if emotion == "happy":

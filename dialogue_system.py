@@ -69,13 +69,20 @@ class DialogueSystem:
             self.box_height,
         )
 
-    def start_dialogue(self, character_id: str, player_context: dict, on_finish=None):
+    def start_dialogue(self, character_id: str, player_context: dict = None, dialogue_lines: list = None, on_finish=None):
         """Begin a dialogue session with an NPC."""
         self.active = True
         self.dialogue_index = 0
         self.on_finish_callback = on_finish
+        # @STUDENT-EDIT-Day4-1: Insert print() statements here to debug which dialogue branch is executing
 
-        if self.ai_enabled and self.ai_manager:
+        if dialogue_lines:
+            # If explicit dialogue lines are passed (e.g. from custom NPCs), use them
+            self.current_dialogue = []
+            for paragraph in dialogue_lines:
+                pages = self._wrap_text(paragraph, self.text_box_rect.width - 40)
+                self.current_dialogue.extend(pages)
+        elif self.ai_enabled and self.ai_manager and player_context:
             # Generate dialogue using AI
             dialogue_line = self.ai_manager.generate_npc_dialogue(
                 character_name=player_context.get("npc_name", "NPC"),
@@ -98,9 +105,13 @@ class DialogueSystem:
 
     def _get_static_fallback(self, character_id: str) -> str:
         """Provides a simple, static fallback dialogue for NPCs."""
+        # @STUDENT-EDIT-Day5-3: Try loading custom dialogue from a text file here instead of hardcoding it
+        # @STUDENT-EDIT-Day3-1: Add a new greeting string to this dialogue dictionary
         fallbacks = {
             "trader": "Welcome, friend! I have many fine goods for a hardworking farmer like you. Let's see what you need."
         }
+        # @STUDENT-EDIT-Day3-2: Create a branching dialogue option using nested lists/dictionaries
+        # @STUDENT-EDIT-Day3-3: Add a dialogue choice that ends the conversation early (self.active = False)
         return fallbacks.get(character_id, "Hello there! Nice day for farming.")
 
     def _wrap_text(self, text, max_width):
@@ -151,6 +162,7 @@ class DialogueSystem:
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
+                    # @STUDENT-EDIT-Day4-2: Link a dialogue choice to a sprite action here if implementing branching
                     self.next_line()
                     return True  # Indicate that we consumed the input
         return False  # No input consumed
