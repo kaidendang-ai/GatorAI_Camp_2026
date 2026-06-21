@@ -7,7 +7,7 @@ Set up programming environment and begin coding fundamentals.
 1. **Install & Run IDE**: Explain what IDEs are and set up development environment
 2. **Install Python**: Walk through Python installation (if not already installed)
 3. **GitHub Setup**: Sign-in or sign-up for GitHub account
-4. **Download Project**: Clone from [Ian's GitHub Repository](https://github.com/UFResearchComputing/GatorAI_Camp_2025)
+4. **Download Project**: Clone from [Ian's GitHub Repository](https://github.com/UFResearchComputing/GatorAI_Camp_2026)
 5. **Hello World**: Demonstrate running "Hello, World!" in a Python script
 
 ## Core Concepts
@@ -330,7 +330,7 @@ Now let's examine our Game class in detail:
   - Use `pwd` (or `cd` in PowerShell) to verify your location
 - Verify GitHub repository cloned successfully
   - Check that you can see all the files listed in the workspace structure
-  - If missing, try cloning again: `git clone https://github.com/UFResearchComputing/GatorAI_Camp_2025`
+  - If missing, try cloning again: `git clone https://github.com/UFResearchComputing/GatorAI_Camp_2026`
 - Check that all required files are present after cloning
   - Compare your folder to the workspace structure shown at the beginning
   - Pay special attention to .py files and asset folders like graphics/, audio/, etc.

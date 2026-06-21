@@ -166,9 +166,13 @@ class SoilLayer:
 					self.grid[y][x].append('P')
 					Plant(seed, [self.all_sprites, self.plant_sprites, self.collision_sprites], soil_sprite, self.check_watered)
 
-	def update_plants(self, dt):
+	def update_plants(self, dt=None):
+		# When the player sleeps, reset() calls this with no dt to advance
+		# every plant by a full day's worth of growth. During normal gameplay
+		# the Level passes the per-frame delta time so plants grow gradually.
+		grow_amount = dt if dt is not None else DAY_GROWTH
 		for plant in self.plant_sprites.sprites():
-			plant.grow(dt)
+			plant.grow(grow_amount)
 
 	def create_soil_tiles(self):
 		self.soil_sprites.empty()

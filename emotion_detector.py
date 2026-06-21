@@ -13,6 +13,21 @@ import time
 import game_settings
 
 
+# Maps the labels the trained model outputs to the canonical names used by the
+# rest of the game (the bunny-*.png icons in overlay.py and the emotion guidance
+# in ai_dialogue_manager.py). The model emits e.g. "Fear"/"Surprise", but the
+# game uses "fearful"/"surprised", so we translate here. Comparison is done in
+# lowercase, so only the spelling differences need entries.
+EMOTION_LABEL_MAP = {
+    "angry": "angry",
+    "fear": "fearful",
+    "happy": "happy",
+    "neutral": "neutral",
+    "sad": "sad",
+    "surprise": "surprised",
+}
+
+
 # =============================================================================
 # DEFINE THE CNN MODEL ARCHITECTURE
 # =============================================================================
@@ -79,16 +94,6 @@ class EmotionDetector(threading.Thread):
 
     def stop(self):
         self._stopper.set()
-
-    def restart_with_new_camera(self):
-        """Restart the detector with a new camera selection"""
-        if self.is_alive():
-            print("🔄 Restarting emotion detector with new camera...")
-            self.stop()
-            self.join(timeout=2.0)  # Wait for thread to stop
-            # Create a new detector instance and start it
-            return True
-        return False
 
     def _load_model(self):
         """Loads the trained emotion recognition model."""
@@ -237,14 +242,24 @@ class EmotionDetector(threading.Thread):
                             with torch.no_grad():
                                 output = self.model(image_tensor)
                                 # @STUDENT-EDIT-Week2_Day2-2: Adjust the confidence threshold for emotion detection here if needed (e.g. 0.5)
+                                # This 6-class model rarely exceeds 0.5 confidence
+                                # for natural expressions, so a lower threshold
+                                # (0.4) lets real emotions register instead of
+                                # always falling back to "neutral".
                                 probabilities = torch.nn.functional.softmax(output, dim=1)
                                 max_prob, pred_idx = torch.max(probabilities, dim=1)
-                                
-                                if max_prob.item() > 0.5:
+
+                                if max_prob.item() >= 0.4:
                                     emotion = self.emotion_names[pred_idx.item()]
                                 else:
                                     emotion = "neutral"
-                                
+
+                                # Translate the model's label (e.g. "Fear") to the
+                                # canonical name the overlay icons and AI dialogue
+                                # manager expect (e.g. "fearful").
+                                emotion = EMOTION_LABEL_MAP.get(
+                                    emotion.lower(), emotion.lower()
+                                )
                                 self.emotions_deque.append(emotion)
 
                     last_emotion_time = current_time

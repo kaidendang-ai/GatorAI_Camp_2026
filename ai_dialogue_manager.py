@@ -118,12 +118,8 @@ class AIDialogueManager:
         Dialogue:
         """
 
-        # @STUDENT-EDIT-Week2_Day5-2: Final codebase cleanup (e.g. remove or comment out these test print statements before presenting)
-        # Debug: Print the prompt being sent to AI
-        print(f"🤖 AI Prompt Debug:")
-        print(f"   Character: {character_name} ({character_role})")
-        print(f"   Context: {player_context}")
-        print(f"   Emotion: {emotion}")
+        # @STUDENT-EDIT-Week2_Day5-2: Want to see what gets sent to the AI? Add
+        # print() statements here to inspect the character, context, and emotion.
 
         try:
             response = self.client.chat.completions.create(

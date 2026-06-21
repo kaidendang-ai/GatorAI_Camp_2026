@@ -149,10 +149,13 @@ class Overlay:
         game_settings.set_current_overlay(self)
 
         # Emotion icons
+        # These keys MUST match the lowercase labels the emotion model emits and
+        # the keys used in ai_dialogue_manager.py, as well as the bunny-*.png
+        # filenames on disk. Keep all three in sync or icons won't appear.
         emotions_path = os.path.join(base_path, "graphics/emotions/")
         self.emotion_icons = {}
-        for emotion in ["Happy", "Sad", "Angry", "Surprised", "Neutral", "Fear"]:
-            icon_path = os.path.join(emotions_path, f"bunny-{emotion.lower()}.png")
+        for emotion in ["happy", "sad", "angry", "surprised", "neutral", "fearful"]:
+            icon_path = os.path.join(emotions_path, f"bunny-{emotion}.png")
             if os.path.exists(icon_path):
                 icon_surf = pygame.image.load(icon_path).convert_alpha()
                 # Scale emotion icons to match the inventory icon size (64x64)

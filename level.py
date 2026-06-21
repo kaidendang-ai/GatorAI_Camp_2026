@@ -325,27 +325,11 @@ class Level:
         - Callback functions
         - Game state management
         """
-        # Get the most recent emotion for context-aware dialogue
-        recent_emotions = (
-            list(self.emotions_deque) if self.emotions_deque else ["neutral"]
-        )
-        current_emotion = recent_emotions[0] if recent_emotions else "neutral"
-
-        # Debug: Print emotion information
-        print(f"🎭 Emotion Debug - Emotions in deque: {recent_emotions}")
-        print(f"🎭 Current emotion being sent to AI: {current_emotion}")
-        print(f"💰 Player money: ${self.player.money}")
-
-        # For testing: Add some emotions to the deque if it's empty
-        if not self.emotions_deque or len(self.emotions_deque) == 0:
-            print("🎭 No emotions detected, adding test emotion...")
-            import random
-
-            test_emotions = ["happy", "surprised", "neutral", "excited"]
-            test_emotion = random.choice(test_emotions)
-            self.emotions_deque.append(test_emotion)
-            current_emotion = test_emotion
-            print(f"🎭 Added test emotion: {test_emotion}")
+        # Get the most recent emotion for context-aware dialogue. When no emotion
+        # has been detected (camera off, or no face seen yet) we default to
+        # "neutral" so the AI still has valid context to work with.
+        recent_emotions = list(self.emotions_deque) if self.emotions_deque else []
+        current_emotion = recent_emotions[-1] if recent_emotions else "neutral"
 
         # Determine player context based on their money and progress
         if self.player.money > 1000:

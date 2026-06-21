@@ -107,6 +107,10 @@ GROW_SPEED = {
     "tomato": 0.07,  # Tomatoes grow a bit slower
 }
 
+# How much growth a single night's sleep gives every plant. Sleeping skips a
+# full day, so plants advance much more than during a single gameplay frame.
+DAY_GROWTH = 10
+
 # @STUDENT-EDIT-Day2-2: Change the player's movement speed (PLAYER_SPEED)
 PLAYER_SPEED = 200
 
