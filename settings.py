@@ -42,7 +42,7 @@ SCREEN_CENTER_Y = SCREEN_HEIGHT / 2  # float: vertical middle of the screen
 # zero, it does NOT round!) and float(64) -> 64.0. More casting practice is in scratch.py.
 
 # @STUDENT-EDIT-Day5-1: Customize the player name and greeting variables
-PLAYER_NAME = "Farmer"  # Name shown for the player (Default: "Farmer")
+PLAYER_NAME = "capitalist"  # Name shown for the player (Default: "capitalist")
 GREETING = "Hello there!"  # Starter greeting text (Default: "Hello there!")
 
 # =============================================================================
@@ -120,8 +120,8 @@ APPLE_POS = {
 
 # Plant growth speeds (lower numbers = faster growth)
 GROW_SPEED = {
-    "corn": 0.1,  # Corn grows relatively fast (Default: 0.1)
-    "tomato": 0.07,  # Tomatoes grow a bit slower (Default: 0.07)
+    "corn": 0.01,  # Corn grows relatively fast (Default: 0.1)
+    "tomato": 0.02,  # Tomatoes grow a bit slower (Default: 0.07)
 }
 
 # How much growth a single night's sleep gives every plant. Sleeping skips a
@@ -138,16 +138,16 @@ PLAYER_SPEED = 200  # Player movement speed (Default: 200)
 
 # How much money you get for selling each item (tomato is the most valuable)
 SALE_PRICES = {
-    "wood": 4,  # Default sale value for wood
+    "wood": 1,  # Default sale value for wood
     "apple": 2,  # Default sale value for apples
-    "corn": 10,  # Default sale value for corn
-    "tomato": 20,  # Default sale value for tomatoes
+    "corn": 6,  # Default sale value for corn
+    "tomato": 22,  # Default sale value for tomatoes
 }
 
 # How much it costs to buy each seed
 PURCHASE_PRICES = {
-    "corn": 4,  # Default seed purchase price for corn
-    "tomato": 5,  # Default seed purchase price for tomatoes
+    "corn": 5,  # Default seed purchase price for corn
+    "tomato": 20,  # Default seed purchase price for tomatoes
 }
 
 # =============================================================================

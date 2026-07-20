@@ -150,7 +150,7 @@ class AIDialogueManager:
             if emotion == "happy":
                 return "I can see you're in great spirits today! That positive energy will help your crops grow beautifully. What can I get you?"
             elif emotion == "sad":
-                return "I notice you seem a bit down, friend. Remember, every farmer has tough days, but I've got just the things to brighten your mood!"
+                return "I notice you seem a bit down, friend. Remember, every capitalist has tough days, but I've got just the things to brighten your mood!"
             elif emotion == "angry":
                 return "Take a deep breath, friend. Farming can be frustrating sometimes, but you're doing better than you think. Let me help you out."
             elif emotion == "surprised":
@@ -158,7 +158,7 @@ class AIDialogueManager:
             elif emotion == "fearful":
                 return "Don't worry, you're safe here with me. Farming can feel overwhelming at first, but I'll help you get what you need."
             elif "rich" in player_context:
-                return "Welcome back, esteemed farmer! Your success is impressive. I have some premium items that might interest you."
+                return "Welcome back, esteemed capitalist! Your success is impressive. I have some premium items that might interest you."
             elif "new" in player_context or "starting" in player_context:
                 return "Hello there! New to farming? Don't worry, I've got just the tools and seeds to get you started on your adventure!"
             else:

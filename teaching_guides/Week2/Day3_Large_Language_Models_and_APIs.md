@@ -131,7 +131,7 @@ The student-facing steps live in
 - **System vs. user message:** the *system* message sets the AI's overall behavior; the
   *user* message is the specific request. Marker `@STUDENT-EDIT-Week2_Day4-1` (in the
   user prompt) and `@STUDENT-EDIT-Week2_Day5-1` (system prompt) are where students give
-  the NPC a personality — pirate, robot, grumpy farmer, etc.
+  the NPC a personality — pirate, robot, grumpy capitalist, etc.
 - **`emotion_guidance`** is a dictionary that turns a detected emotion into instructions
   for the AI — this is where Week 2's two AI systems start to meet.
 - **`temperature=0.8`** controls randomness/creativity; **`max_tokens=100`** caps length.

@@ -48,7 +48,7 @@ These real constants are the easy personalization knobs (no invented settings ne
 
 ```python
 TITLE = "Capitalism simulator!"   # @STUDENT-EDIT-Day1-2
-PLAYER_NAME = "Farmer"            # @STUDENT-EDIT-Day5-1
+PLAYER_NAME = "capitalist"            # @STUDENT-EDIT-Day5-1
 GREETING = "Hello there!"         # @STUDENT-EDIT-Day5-1
 ```
 

@@ -24,7 +24,7 @@ Run it with:   python bridge_to_week2.py
 # Try adding your own emotions and lines, or change what the shopkeeper says!
 EMOTION_REPLIES = {
     "happy": "You're glowing today! Your crops must be thriving. What can I get you?",
-    "sad": "Chin up, friend. Every farmer has hard days - let me help brighten yours.",
+    "sad": "Chin up, friend. Every capitalist has hard days - let me help brighten yours.",
     "angry": "Take a breath. Farming tests our patience, but you're doing great.",
     "surprised": "Ha! Something catch you off guard? The farm is full of surprises.",
     "fearful": "You're safe here with me. No need to worry - let's get you sorted.",

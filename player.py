@@ -98,16 +98,16 @@ class Player(pygame.sprite.Sprite):
 
         # INVENTORY SYSTEM - What the player is carrying
         self.item_inventory = {  # Items collected from the world
-            "wood": 20,  # Wood from chopping trees
-            "apple": 20,  # Apples from trees
-            "corn": 20,  # Harvested corn
-            "tomato": 20,  # Harvested tomatoes
+            "wood": 0,  # Wood from chopping trees
+            "apple": 0,  # Apples from trees
+            "corn": 0,  # Harvested corn
+            "tomato": 0,  # Harvested tomatoes
         }
         self.seed_inventory = {  # Seeds available for planting
-            "corn": 5,  # Corn seeds
-            "tomato": 5,  # Tomato seeds
+            "corn":20,  # Corn seeds
+            "tomato": 0,  # Tomato seeds
         }
-        self.money = 200  # Player's money/coins
+        self.money = 000  # Player's money/coins
 
         # WORLD INTERACTION SYSTEMS
         self.tree_sprites = tree_sprites  # Trees that can be chopped

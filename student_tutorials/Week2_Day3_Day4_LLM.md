@@ -8,7 +8,7 @@ Add your API key safely in the `ai_materials/navigator_api_key.json` file. Remem
 
 ## Step 2: Modify the System Prompt
 Find `@STUDENT-EDIT-Week2_Day4-1` in `ai_dialogue_manager.py`.
-Modify the system prompt to give the AI a unique personality. Tell it to act like a pirate, a robot, or a grumpy farmer!
+Modify the system prompt to give the AI a unique personality. Tell it to act like a pirate, a robot, or a grumpy capitalist!
 
 ## Step 3: Custom Fallback Responses
 Find `@STUDENT-EDIT-Week2_Day4-2`.

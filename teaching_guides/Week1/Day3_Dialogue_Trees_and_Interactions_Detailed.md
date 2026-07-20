@@ -116,7 +116,7 @@ This is the exact spot students edit today. It's a dictionary lookup with a defa
         # @STUDENT-EDIT-Day3-1: Add a new greeting string to this dialogue dictionary
         fallbacks = {
             "trader": "Welcome, friend! I have many fine goods for a hardworking "
-                      "farmer like you. Let's see what you need."
+                      "capitalist like you. Let's see what you need."
         }
         # @STUDENT-EDIT-Day3-2: Create a branching dialogue option using nested lists/dictionaries
         # @STUDENT-EDIT-Day3-3: Add a dialogue choice that ends the conversation early (self.active = False)
