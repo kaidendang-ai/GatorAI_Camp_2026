@@ -106,7 +106,7 @@ The student-facing steps live in
 
         # @STUDENT-EDIT-Week2_Day4-1: Change the prompt to give the AI a new personality!
         prompt = f"""
-        You are {character_name}, a {character_role} in a cozy farming game called PyDew Valley.
+        You are {character_name}, a {character_role} in a cozy farming game called Capitalism simulator!.
         Player context: {player_context}
         Player's current emotion: {emotion}
         Emotional guidance: {emotion_hint}

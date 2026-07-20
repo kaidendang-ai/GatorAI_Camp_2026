@@ -1,5 +1,5 @@
 """
-PyDew Valley - Educational Game for Learning Python
+Capitalism simulator! - Educational Game for Learning Python
 ==================================================
 This is the main game file that starts and runs our farming simulation game.
 We will learn Python concepts through game development!
@@ -99,8 +99,10 @@ class Game:
         # It will be created later when start_game() is called if camera is enabled
 
         # @STUDENT-EDIT-Day1-5: Insert a print("Game starting!") statement here to see when the game starts
+        print("Game starting!")  # Debug message to indicate game initialization
         # @STUDENT-EDIT-Day1-6: Combine text AND a variable using an f-string (note the
         # f before the opening quote). Try adding: print(f"Welcome to {TITLE}!")
+        print(f"Welcome to {TITLE}!")  # Debug message with game title
         # The {TITLE} part gets replaced with the value of TITLE from settings.py.
 
     def show_loading_screen(self, message="Loading...", delay_ms=250):
@@ -116,7 +118,7 @@ class Game:
             info_font = pygame.font.SysFont(None, 24)
 
         # Draw game title at top
-        game_title = game_title_font.render("PyDew Valley", True, "White")
+        game_title = game_title_font.render("Capitalism simulator!", True, "White")
         subtitle = info_font.render("GAIC 26", True, (100, 200, 100))
         title_rect = game_title.get_rect(
             center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 120)

@@ -1,5 +1,5 @@
 """
-PyDew Valley - Level Manager Module
+Capitalism simulator! - Level Manager Module
 ==================================
 This module manages the entire game world including map loading, sprite management,
 and game systems coordination. This is one of the most complex files in our game!

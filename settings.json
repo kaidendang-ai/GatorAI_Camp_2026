@@ -5,5 +5,5 @@
   "fullscreen": false,
   "camera_index": 1,
   "enable_camera": true,
-  "enable_ai_dialogue": true
+  "enable_ai_dialogue": false
 }

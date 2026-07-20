@@ -51,8 +51,8 @@ class MainMenu:
 
     def display_main_menu(self):
         """Draw the title and the menu options, highlighting the selected one."""
-        # display the title: "PyDew Valley: GAIC 26" with double the font size
-        title_surf = self.title_font.render("PyDew Valley: GAIC 26", True, "White")
+        # display the title: "Capitalism simulator!" with double the font size
+        title_surf = self.title_font.render("Capitalism simulator!", True, "White")
         title_rect = title_surf.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 4))
         self.display_surface.blit(title_surf, title_rect)
 
@@ -82,7 +82,7 @@ class MainMenu:
         credits_text = [
             "GatorAI Camp 2026",
             "",
-            "Based on PyDew Valley",
+            "Based on Capitalism simulator!",
             "Base code by: Christian Koch",
             "Built with Python & Pygame",
             "",

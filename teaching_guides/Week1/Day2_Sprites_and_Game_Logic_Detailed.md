@@ -211,7 +211,7 @@ NPC_DATA = {
         "pos": (800, 400),
         "graphic": "graphics/objects/merchant.png",  # Placeholder using existing asset
         "dialogue": [
-            "Hi there! Welcome to PyDew Valley!",
+            "Hi there! Welcome to Capitalism simulator!!",
             "I'm Robin, a helper NPC created using Python classes.",
             "Try editing settings.py to change what I say, or create your own custom NPC!"
         ]

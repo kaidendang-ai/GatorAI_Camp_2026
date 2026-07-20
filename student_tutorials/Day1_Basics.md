@@ -1,6 +1,6 @@
 # Day 1: Setup & Introduction
 
-Welcome to PyDew Valley! Today we learn Python fundamentals - variables, comments,
+Welcome to Capitalism simulator!! Today we learn Python fundamentals - variables, comments,
 printing, errors, arithmetic, and data types - by exploring and editing our game. Work
 through the steps **in order**; each one builds on the last.
 

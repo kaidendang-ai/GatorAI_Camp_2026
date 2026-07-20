@@ -1,5 +1,5 @@
 """
-PyDew Valley - UI Overlay System
+Capitalism simulator! - UI Overlay System
 ================================
 This module manages the game's user interface (UI) overlay that appears on top
 of the game world. It shows the player's currently selected tools, seeds,

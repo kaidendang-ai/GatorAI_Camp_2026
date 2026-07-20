@@ -47,7 +47,7 @@ The animation dictionary already has a marked spot for a custom animation folder
 These real constants are the easy personalization knobs (no invented settings needed):
 
 ```python
-TITLE = "PyDew Valley: GAIC 26"   # @STUDENT-EDIT-Day1-2
+TITLE = "Capitalism simulator!"   # @STUDENT-EDIT-Day1-2
 PLAYER_NAME = "Farmer"            # @STUDENT-EDIT-Day5-1
 GREETING = "Hello there!"         # @STUDENT-EDIT-Day5-1
 ```

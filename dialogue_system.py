@@ -1,5 +1,5 @@
 """
-PyDew Valley - Dialogue System
+Capitalism simulator! - Dialogue System
 =============================
 This module manages character dialogue in the game, providing a flexible
 framework for conversations with NPCs (Non-Player Characters).
