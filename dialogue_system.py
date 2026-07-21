@@ -55,6 +55,7 @@ class DialogueSystem:
         self.on_finish_callback = None
         self.choice_mode = False
         self.choice_buttons = []
+        self.character_id = None
 
         # AI Dialogue Manager
         self.ai_enabled = game_settings.get("enable_ai_dialogue", True) and AI_AVAILABLE
@@ -80,7 +81,8 @@ class DialogueSystem:
         self.active = True
         self.dialogue_index = 0
         self.on_finish_callback = on_finish
-        self.choice_mode = character_id == "Poker person"
+        self.character_id = character_id
+        self.choice_mode = False
         self.choice_buttons = []
         # @STUDENT-EDIT-Day4-1: Insert print() statements here to debug which dialogue branch is executing
 
@@ -107,9 +109,6 @@ class DialogueSystem:
             self.current_dialogue = self._wrap_text(
                 fallback_dialogue, self.text_box_rect.width - 40
             )
-
-        if self.choice_mode:
-            self.choice_buttons = self._build_choice_buttons()
 
         if not self.current_dialogue:
             self.end_dialogue()
@@ -167,23 +166,41 @@ class DialogueSystem:
             {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "No Thanks", "action": "end_dialogue"},
         ]
 
+    def _show_choice_buttons(self):
+        """Reveal the poker choice buttons after the intro dialogue finishes."""
+        if self.character_id == "Poker person":
+            self.choice_buttons = self._build_choice_buttons()
+            self.choice_mode = True
+
     def _handle_choice_action(self, action):
         """Respond to a poker-choice button press."""
         if action == "play_poker":
-            self.end_dialogue()
+            self.active = False
+            self.choice_mode = False
+            self.choice_buttons = []
             poker_script = os.path.join(os.path.dirname(__file__), "poker.py")
             if os.path.exists(poker_script):
-                subprocess.Popen([sys.executable, poker_script])
+                subprocess.Popen([sys.executable, poker_script], cwd=os.path.dirname(__file__))
             else:
                 print("Poker script not found.")
+            pygame.quit()
+            raise SystemExit(0)
         else:
             self.end_dialogue()
 
     def next_line(self):
         """Advance to the next page of dialogue or end the session."""
-        self.dialogue_index += 1
-        if self.dialogue_index >= len(self.current_dialogue):
+        if self.choice_mode:
             self.end_dialogue()
+            return
+
+        if self.dialogue_index >= len(self.current_dialogue) - 1:
+            if self.character_id == "Poker person":
+                self._show_choice_buttons()
+            else:
+                self.end_dialogue()
+        else:
+            self.dialogue_index += 1
 
     def end_dialogue(self):
         """End the current dialogue session and trigger the callback."""

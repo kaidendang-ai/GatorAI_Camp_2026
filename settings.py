@@ -175,7 +175,7 @@ NPC_DATA = {
         ]  # Default starter dialogue lines
     },
     "Poker person": {
-        "pos": (900, 380),  # Default spawn position
+        "pos": (1600, 410),  # Default spawn position
         "graphic": "graphics/objects/merchant.png",  # Placeholder using existing asset (Default: "graphics/objects/merchant.png")
         "dialogue": [
             "Hi there! Welcome to Capitalism simulator!!",
