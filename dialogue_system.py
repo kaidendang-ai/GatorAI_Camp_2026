@@ -20,6 +20,10 @@ This system can be easily extended to support:
 - Dynamic dialogue based on game state
 """
 
+import os
+import subprocess
+import sys
+
 import pygame
 from settings import *
 from timer import Timer
@@ -49,6 +53,8 @@ class DialogueSystem:
         self.current_dialogue = []
         self.dialogue_index = 0
         self.on_finish_callback = None
+        self.choice_mode = False
+        self.choice_buttons = []
 
         # AI Dialogue Manager
         self.ai_enabled = game_settings.get("enable_ai_dialogue", True) and AI_AVAILABLE
@@ -74,6 +80,8 @@ class DialogueSystem:
         self.active = True
         self.dialogue_index = 0
         self.on_finish_callback = on_finish
+        self.choice_mode = character_id == "Poker person"
+        self.choice_buttons = []
         # @STUDENT-EDIT-Day4-1: Insert print() statements here to debug which dialogue branch is executing
 
         if dialogue_lines:
@@ -99,6 +107,9 @@ class DialogueSystem:
             self.current_dialogue = self._wrap_text(
                 fallback_dialogue, self.text_box_rect.width - 40
             )
+
+        if self.choice_mode:
+            self.choice_buttons = self._build_choice_buttons()
 
         if not self.current_dialogue:
             self.end_dialogue()
@@ -142,6 +153,32 @@ class DialogueSystem:
         # Ensure we always have at least one page
         return pages if pages else [["No dialogue available."]]
 
+    def _build_choice_buttons(self):
+        """Create on-screen buttons for the poker choice prompt."""
+        button_width = 150
+        button_height = 44
+        button_y = self.text_box_rect.bottom - 72
+        x_center = self.text_box_rect.centerx
+        x_left = x_center - button_width - 20
+        x_right = x_center + 20
+
+        return [
+            {"rect": pygame.Rect(x_left, button_y, button_width, button_height), "label": "Play Poker", "action": "play_poker"},
+            {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "No Thanks", "action": "end_dialogue"},
+        ]
+
+    def _handle_choice_action(self, action):
+        """Respond to a poker-choice button press."""
+        if action == "play_poker":
+            self.end_dialogue()
+            poker_script = os.path.join(os.path.dirname(__file__), "poker.py")
+            if os.path.exists(poker_script):
+                subprocess.Popen([sys.executable, poker_script])
+            else:
+                print("Poker script not found.")
+        else:
+            self.end_dialogue()
+
     def next_line(self):
         """Advance to the next page of dialogue or end the session."""
         self.dialogue_index += 1
@@ -153,6 +190,8 @@ class DialogueSystem:
         self.active = False
         self.current_dialogue = []
         self.dialogue_index = 0
+        self.choice_mode = False
+        self.choice_buttons = []
         if self.on_finish_callback:
             self.on_finish_callback()
             self.on_finish_callback = None
@@ -160,10 +199,19 @@ class DialogueSystem:
     def input(self, events):
         """Handle player input for advancing dialogue using events to prevent conflicts."""
         for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN and self.choice_mode and event.button == 1:
+                for button in self.choice_buttons:
+                    if button["rect"].collidepoint(event.pos):
+                        self._handle_choice_action(button["action"])
+                        return True
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_RETURN:
                     # @STUDENT-EDIT-Day4-2: Link a dialogue choice to a sprite action here if implementing branching
-                    self.next_line()
+                    if self.choice_mode:
+                        self._handle_choice_action("end_dialogue")
+                    else:
+                        self.next_line()
                     return True  # Indicate that we consumed the input
         return False  # No input consumed
 
@@ -188,8 +236,19 @@ class DialogueSystem:
                             (self.text_box_rect.x + 20, start_y + i * line_height),
                         )
 
-            # Draw continue prompt
-            if self.dialogue_index < len(self.current_dialogue) - 1:
+            if self.choice_mode:
+                mouse_pos = pygame.mouse.get_pos()
+                for button in self.choice_buttons:
+                    hovered = button["rect"].collidepoint(mouse_pos)
+                    color = (80, 140, 220) if hovered else (60, 90, 160)
+                    pygame.draw.rect(self.display_surface, color, button["rect"], border_radius=8)
+                    pygame.draw.rect(self.display_surface, "White", button["rect"], 2, border_radius=8)
+                    label_surface = self.font.render(button["label"], True, "White")
+                    label_rect = label_surface.get_rect(center=button["rect"].center)
+                    self.display_surface.blit(label_surface, label_rect)
+
+                prompt_text = "Choose an option..."
+            elif self.dialogue_index < len(self.current_dialogue) - 1:
                 prompt_text = "Press ENTER to continue..."
             else:
                 prompt_text = "Press ENTER to finish..."

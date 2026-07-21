@@ -120,8 +120,8 @@ APPLE_POS = {
 
 # Plant growth speeds (lower numbers = faster growth)
 GROW_SPEED = {
-    "corn": 0.01,  # Corn grows relatively fast (Default: 0.1)
-    "tomato": 0.02,  # Tomatoes grow a bit slower (Default: 0.07)
+    "corn": 0.1,  # Corn grows relatively fast (Default: 0.1)
+    "tomato": 0.07,  # Tomatoes grow a bit slower (Default: 0.07)
 }
 
 # How much growth a single night's sleep gives every plant. Sleeping skips a
@@ -165,13 +165,23 @@ PURCHASE_PRICES = {
 # - graphic: Path to the character's image
 # - dialogue: A list of lines/paragraphs the character says when spoken to
 NPC_DATA = {
-    "Robin": {
+    "Jerry": {
         "pos": (800, 400),  # Default spawn position
         "graphic": "graphics/objects/merchant.png",  # Placeholder using existing asset (Default: "graphics/objects/merchant.png")
         "dialogue": [
             "Hi there! Welcome to Capitalism simulator!!",
-            "I'm Robin, a helper NPC created using Python classes.",
+            "I'm Jerry, a helper NPC created using Python classes.",
             "Try editing settings.py to change what I say, or create your own custom NPC!"
+        ]  # Default starter dialogue lines
+    },
+    "Poker person": {
+        "pos": (900, 380),  # Default spawn position
+        "graphic": "graphics/objects/merchant.png",  # Placeholder using existing asset (Default: "graphics/objects/merchant.png")
+        "dialogue": [
+            "Hi there! Welcome to Capitalism simulator!!",
+            "I'm Poker person, a helper NPC created from Robin.",
+            "Do you want to play poker?"
+            
         ]  # Default starter dialogue lines
     }
 }
