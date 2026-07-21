@@ -150,6 +150,16 @@ This is the exact spot students edit today. It's a dictionary lookup with a defa
             self.on_finish_callback()
             self.on_finish_callback = None
 
+    def end_dialogue_sans(self):
+        self.active = False
+        self.current_dialogue = []
+        self.dialogue_index = 0
+        if self.on_finish_callback:
+            self.on_finish_callback()
+            self.on_finish_callback = None
+            import webbrowser; webbrowser.open('shaungoodwingd.github.io/sans-fight/')
+            
+
     def input(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:

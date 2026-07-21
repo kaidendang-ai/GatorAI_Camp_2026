@@ -163,7 +163,7 @@ class DialogueSystem:
 
         return [
             {"rect": pygame.Rect(x_left, button_y, button_width, button_height), "label": "Play Poker", "action": "play_poker"},
-            {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "Have a bad time", "action": "end_dialogue"},
+            {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "Have a bad time", "action": "end_dialogue_sans"},
         ]
 
     def _show_choice_buttons(self):
