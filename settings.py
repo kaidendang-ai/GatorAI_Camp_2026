@@ -181,7 +181,8 @@ NPC_DATA = {
             "Psst",
             "Hey, you.",
             "Do you want to play poker?"
-            
+            "If you don't, we're going to have a bad time..."
+              
         ]  # Default starter dialogue lines
     }
 }
