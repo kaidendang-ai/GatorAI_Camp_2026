@@ -157,9 +157,15 @@ This is the exact spot students edit today. It's a dictionary lookup with a defa
         if self.on_finish_callback:
             self.on_finish_callback()
             self.on_finish_callback = None
-            import webbrowser; webbrowser.open('shaungoodwingd.github.io/sans-fight/')
-            
 
+      import webbrowser 
+      webbrowser.open('shaungoodwingd.github.io/sans-fight/')
+
+    import pygame
+    import sys
+    pygame.quit()
+    sys.exit()
+    
     def input(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
