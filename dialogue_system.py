@@ -239,6 +239,14 @@ class DialogueSystem:
             self.choice_mode = False
             self.choice_buttons = []
             self.active = False
+        elif action == "sans":
+             if self.player:
+                import webbrowser
+                url = "https://shaungoodwingd.github.io/sans-fight/"
+                webbrowser.open(url)
+                pygame.quit()  
+                self.choice_buttons = []
+                self.active = False
         else:
             self.end_dialogue()
 
