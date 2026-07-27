@@ -218,9 +218,13 @@ class Level:
             if data.get("collision", True):
                 groups.append(self.collision_sprites)
 
+            surf = pygame.image.load(data["graphic"]).convert_alpha()
+            if "scale" in data:
+                surf = pygame.transform.scale(surf, data["scale"])
+
             NPC(
                 pos=data["pos"],
-                surf=pygame.image.load(data["graphic"]).convert_alpha(),
+                surf=surf,
                 name=npc_name,
                 dialogue=data["dialogue"],
                 groups=groups,

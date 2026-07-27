@@ -192,14 +192,17 @@ NPC_DATA = {
         ],
         "z": LAYERS["ground plant"],
         "collision": False,
+        "scale": (70, 70),
     },
     "Teleporter_back": {
-        "pos": (1100, 370),
+        "pos": (1080, 370),
         "graphic": "graphics/overlay/8gNXul.png",
         "dialogue": [
             "A glowing portal hums softly.",
             "Do you want to teleport back home?"
         ],
         "z": LAYERS["ground plant"],
-        "collision": False,    }
+        "collision": False,
+        "scale": (70, 70),
+    }
 }
