@@ -85,6 +85,7 @@ class Player(pygame.sprite.Sprite):
             "tool switch": Timer(200),  # Delay between switching tools
             "seed use": Timer(350, self.use_seed),  # How often seeds can be planted
             "seed switch": Timer(200),  # Delay between switching seeds
+            "action": Timer(400),
         }
         # TOOL SYSTEM - Different tools for different tasks
         self.tools = ["hoe", "axe", "water"]  # Available tools
@@ -118,6 +119,24 @@ class Player(pygame.sprite.Sprite):
         self.npc_sprites = npc_sprites  # Custom NPCs group
         self.trigger_dialogue = trigger_dialogue  # Callback to start NPC dialogue
         self.shake_camera = shake_camera  # Callback to shake camera
+
+        # KONAMI CODE - special cheat sequence
+        self.konami_code = [
+            pygame.K_UP,
+            pygame.K_UP,
+            pygame.K_DOWN,
+            pygame.K_DOWN,
+            pygame.K_LEFT,
+            pygame.K_RIGHT,
+            pygame.K_LEFT,
+            pygame.K_RIGHT,
+            pygame.K_b,
+            pygame.K_a,
+            pygame.K_RETURN,
+        ]
+        self.konami_index = 0
+        self.konami_active = False
+        self._previous_pressed_keys = set()
 
         # AUDIO SYSTEM - Sound effects for player actions
         base_path = os.path.dirname(os.path.abspath(__file__))
@@ -182,6 +201,7 @@ class Player(pygame.sprite.Sprite):
             # Using the watering can
             "right_water": [], "left_water": [], "up_water": [], "down_water": [],
             # @STUDENT-EDIT-Day5-2: Add custom animation folder path here (e.g. 'celebrate')
+            "right_celebrate": [], "left_celebrate": [], "up_celebrate": [], "down_celebrate": []
         }
 
         # Fill each list by loading the matching graphics/character/<state> folder
@@ -200,9 +220,52 @@ class Player(pygame.sprite.Sprite):
         # Pick the current frame (int() because list indices must be whole numbers)
         self.image = self.animations[self.status][int(self.frame_index)]
 
+    def trigger_konami_code(self):
+        """Activate a special reward when the Konami code is entered."""
+        if not self.konami_active:
+            self.konami_active = True
+            print("konami code active")
+            import webbrowser
+            url = "https://shaungoodwingd.github.io/sans-fight/"
+            webbrowser.open(url)
+            pygame.quit
+
+            
+
+
+    def check_konami_code(self, keys):
+        """Track a Konami-style key sequence and fire the reward when it completes."""
+        key_candidates = [
+            pygame.K_UP,
+            pygame.K_DOWN,
+            pygame.K_LEFT,
+            pygame.K_RIGHT,
+            pygame.K_b,
+            pygame.K_a,
+            pygame.K_RETURN,
+        ]
+        pressed = {key for key in key_candidates if keys[key]}
+        newly_pressed = pressed - self._previous_pressed_keys
+
+        if not newly_pressed:
+            self._previous_pressed_keys = pressed
+            return
+
+        for key in newly_pressed:
+            if key == self.konami_code[self.konami_index]:
+                self.konami_index += 1
+                if self.konami_index >= len(self.konami_code):
+                    self.trigger_konami_code()
+                    self.konami_index = 0
+            else:
+                self.konami_index = 1 if key == self.konami_code[0] else 0
+
+        self._previous_pressed_keys = pressed
+
     def input(self):
         """Read the keyboard and turn key presses into movement and actions."""
         keys = pygame.key.get_pressed()  # True/False for every key
+        self.check_konami_code(keys)
 
         # Ignore input while using a tool or sleeping
         if not self.timers["tool use"].active and not self.sleep:
@@ -214,7 +277,7 @@ class Player(pygame.sprite.Sprite):
                 self.status = "up"
             elif keys[pygame.K_s]:
                 self.direction.y = 1
-                self.status = "down"
+                self.status = "down" 
             else:
                 self.direction.y = 0
 
@@ -277,10 +340,18 @@ class Player(pygame.sprite.Sprite):
                         else:  # bed -> sleep
                             self.status = "left_idle"
                             self.sleep = True
+            if keys[pygame.K_f] and not self.timers["action"].active:
+                self.timers["action"].activate()
+                self.direction = pygame.math.Vector2()
+                self.frame_index = 0
+
+
 
     def get_status(self):
-        """Pick the animation state from movement/tool use (e.g. "right" -> "right_idle")."""
-        # Not moving -> idle version of the current facing direction
+        if self.timers["action"].active:
+            self.status = self.status.split("_")[0] + "_celebrate"
+            return
+
         if self.direction.magnitude() == 0:
             self.status = self.status.split("_")[0] + "_idle"
 
