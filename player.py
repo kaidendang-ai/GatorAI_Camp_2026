@@ -228,9 +228,7 @@ class Player(pygame.sprite.Sprite):
             import webbrowser
             url = "https://shaungoodwingd.github.io/sans-fight/"
             webbrowser.open(url)
-            pygame.quit
-
-            
+            pygame.quit()      
 
 
     def check_konami_code(self, keys):
