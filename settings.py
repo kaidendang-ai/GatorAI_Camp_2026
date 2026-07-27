@@ -182,6 +182,24 @@ NPC_DATA = {
             "Hey, you.",
             "Do you want to play poker?"
             "If you don't, we're going to have a bad time..."
-        ]
-    }
+        ]    },
+    "Teleporter": {
+        "pos": (1500, 1500),
+        "graphic": "graphics/overlay/8gNXul.png",
+        "dialogue": [
+            "A glowing portal appears before you.",
+            "Do you want to teleport to the market?"
+        ],
+        "z": LAYERS["ground plant"],
+        "collision": False,
+    },
+    "Teleporter_back": {
+        "pos": (1100, 370),
+        "graphic": "graphics/overlay/8gNXul.png",
+        "dialogue": [
+            "A glowing portal hums softly.",
+            "Do you want to teleport back home?"
+        ],
+        "z": LAYERS["ground plant"],
+        "collision": False,    }
 }

@@ -45,7 +45,7 @@ class DialogueSystem:
     AI-generated dynamic content.
     """
 
-    def __init__(self):
+    def __init__(self, player=None):
         """Initialize the dialogue system and its components."""
         self.display_surface = pygame.display.get_surface()
         self.font = pygame.font.Font("font/LycheeSoda.ttf", 30)
@@ -56,6 +56,7 @@ class DialogueSystem:
         self.choice_mode = False
         self.choice_buttons = []
         self.character_id = None
+        self.player = player
 
         # AI Dialogue Manager
         self.ai_enabled = game_settings.get("enable_ai_dialogue", True) and AI_AVAILABLE
@@ -166,6 +167,41 @@ class DialogueSystem:
             {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "Have a bad time", "action": "sans"},
         ]
 
+    def _build_choice_buttons_market(self):
+        """Create on-screen buttons for the teleport-to-market prompt."""
+        button_width = 150
+        button_height = 44
+        button_y = self.text_box_rect.bottom - 72
+        x_center = self.text_box_rect.centerx
+        x_left = x_center - button_width - 20
+        x_right = x_center + 20
+
+        return [
+            {"rect": pygame.Rect(x_left, button_y, button_width, button_height), "label": "Teleport", "action": "teleport_market"},
+            {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "Don't", "action": "don't"},
+        ]
+
+    def _build_choice_buttons_back(self):
+        button_width = 150
+        button_height = 44
+        button_y = self.text_box_rect.bottom - 72
+        x_center = self.text_box_rect.centerx
+        x_left = x_center - button_width - 20
+        x_right = x_center + 20
+
+        return [
+            {"rect": pygame.Rect(x_left, button_y, button_width, button_height), "label": "Teleport", "action": "teleport_back"},
+            {"rect": pygame.Rect(x_right, button_y, button_width, button_height), "label": "Don't", "action": "don't"},
+        ]
+
+    def _show_choice_buttons_market(self):
+        self.choice_buttons = self._build_choice_buttons_market()
+        self.choice_mode = True
+
+    def _show_choice_buttons_back(self):
+        self.choice_buttons = self._build_choice_buttons_back()
+        self.choice_mode = True
+
     def _show_choice_buttons(self):
         """Reveal the poker choice buttons after the intro dialogue finishes."""
         if self.character_id == "Poker person":
@@ -185,6 +221,24 @@ class DialogueSystem:
                 print("Poker script not found.")
             pygame.quit()
             raise SystemExit(0)
+        elif action == "teleport_market":
+            if self.player:
+                self.player.pos.x = 1020
+                self.player.pos.y = 480
+                self.player.hitbox.center = (round(self.player.pos.x), round(self.player.pos.y))
+                self.player.rect.center = self.player.hitbox.center
+            self.choice_mode = False
+            self.choice_buttons = []
+            self.active = False
+        elif action == "teleport_back":
+            if self.player:
+                self.player.pos.x = 1610
+                self.player.pos.y = 1750
+                self.player.hitbox.center = (round(self.player.pos.x), round(self.player.pos.y))
+                self.player.rect.center = self.player.hitbox.center
+            self.choice_mode = False
+            self.choice_buttons = []
+            self.active = False
         else:
             self.end_dialogue()
 
@@ -197,6 +251,10 @@ class DialogueSystem:
         if self.dialogue_index >= len(self.current_dialogue) - 1:
             if self.character_id == "Poker person":
                 self._show_choice_buttons()
+            elif self.character_id == "Teleporter":
+                self._show_choice_buttons_market()
+            elif self.character_id == "Teleporter_back":
+                self._show_choice_buttons_back()
             else:
                 self.end_dialogue()
         else:

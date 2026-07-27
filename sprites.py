@@ -147,9 +147,9 @@ class Tree(Generic):
 
 class NPC(Generic):
 	"""A talkable character with a name and a list of dialogue lines (from NPC_DATA)."""
-	def __init__(self, pos, surf, name, dialogue, groups):
+	def __init__(self, pos, surf, name, dialogue, groups, z=LAYERS['main']):
 		"""Store the NPC's name and dialogue, and set an interaction hitbox."""
-		super().__init__(pos, surf, groups)
+		super().__init__(pos, surf, groups, z=z)
 		self.name = name
 		self.dialogue = dialogue
 		# Setup a hitbox for collisions and interaction range

@@ -87,7 +87,7 @@ class Level:
         # SHOP AND DIALOGUE SYSTEM - trading menu plus the dialogue box
         self.menu = TraderMenu(self.player, self.open_trader_menu)
         self.shop_active = False
-        self.dialogue_system = DialogueSystem()
+        self.dialogue_system = DialogueSystem(player=self.player)
 
         # AUDIO SYSTEM
         # Load and set up game sounds and music
@@ -214,12 +214,17 @@ class Level:
         """Spawn custom NPCs defined in settings.py NPC_DATA configuration."""
         from sprites import NPC
         for npc_name, data in NPC_DATA.items():
+            groups = [self.all_sprites, self.npc_sprites]
+            if data.get("collision", True):
+                groups.append(self.collision_sprites)
+
             NPC(
                 pos=data["pos"],
                 surf=pygame.image.load(data["graphic"]).convert_alpha(),
                 name=npc_name,
                 dialogue=data["dialogue"],
-                groups=[self.all_sprites, self.collision_sprites, self.npc_sprites]
+                groups=groups,
+                z=data.get("z", LAYERS["main"]),
             )
 
     def trigger_npc_dialogue(self, name, lines):
