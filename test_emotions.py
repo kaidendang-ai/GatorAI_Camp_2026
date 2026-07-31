@@ -37,8 +37,8 @@ def test_emotion_integration():
         player_context = f"player is testing the emotion system and seems {emotion}"
 
         dialogue = ai_manager.generate_npc_dialogue(
-            character_name="Merchant Pete",
-            character_role="friendly trader",
+            character_name="German person",
+            character_role="Slightly racist german trader, looks down on the player and speaks with a german accent",
             player_context=player_context,
             emotion=emotion,
         )

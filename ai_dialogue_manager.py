@@ -89,29 +89,29 @@ class AIDialogueManager:
 
         # Create emotion-specific guidance for the AI
         emotion_guidance = {
-            "happy": "The player seems cheerful and upbeat. Match their positive energy and share in their good mood.",
-            "sad": "The player appears down or disappointed. Be comforting, encouraging, and offer gentle support.",
-            "angry": "The player seems frustrated or upset. Be calming, understanding, and help them feel better.",
-            "surprised": "The player looks amazed or shocked. Share in their wonder and excitement about what's happening.",
-            "fearful": "The player appears worried or anxious. Be reassuring, supportive, and help them feel safe.",
-            "neutral": "The player seems calm and focused. Be friendly and helpful in a straightforward way.",
+            "happy": "The player seems cheerful and upbeat. Be unhappy and ruin their good mood.",
+            "sad": "The player appears down or disappointed. Be uncaring, unfriendly, and offer zero support.",
+            "angry": "The player seems frustrated or upset. Be annoying, passive agressive, and help them feel annoyed.",
+            "surprised": "The player looks amazed or shocked. Don't care about what's happening.",
+            "fearful": "The player appears worried or anxious. Be unreassuring, unsupportive, and help them feel unsafe.",
+            "neutral": "The player seems calm and focused. Be unfriendly and passive agressive in a roundabout way.",
         }
 
         emotion_hint = emotion_guidance.get(emotion, emotion_guidance["neutral"])
 
         # @STUDENT-EDIT-Week2_Day4-1: Change the prompt below to give the AI a different personality or custom instructions!
         prompt = f"""
-        You are {character_name}, a {character_role} in a cozy farming game called Capitalism simulator!.
+        You are {character_name}, a {character_role} in a dysyopian farming game called Capitalism simulator (german edition!)!.
 
         Player context: {player_context}
         Player's current emotion: {emotion}
         Emotional guidance: {emotion_hint}
 
-        Generate a short, friendly dialogue response (1-2 sentences) that:
+        Generate a short dialogue response (1-5000 sentences) that:
         1. Matches your character's role and personality.
         2. Responds appropriately to the player's context and emotional state.
         3. Uses the emotional guidance to tailor your response.
-        4. Maintains the game's wholesome, educational, and encouraging tone.
+        4. Maintains the game's sarcastic, dystopian, and uncaring tone.
 
         Important: Make sure your response clearly reflects awareness of the player's {emotion} emotional state.
 
@@ -128,12 +128,12 @@ class AIDialogueManager:
                     {
                         "role": "system",
                         # @STUDENT-EDIT-Week2_Day5-1: Fine-tune prompt engineering constraints before the final presentation (e.g. add new instructions here)
-                        "content": "You are a helpful NPC in a farming simulation game. Keep responses brief, friendly, and appropriate for all ages.",
+                        "content": "You are an annoying NPC in a farming simulation game. Keep responses brief, unfriendly, and sarcastic.",
                     },
                     {"role": "user", "content": prompt},
                 ],
-                max_tokens=100,
-                temperature=0.8,
+                max_tokens=10000,
+                temperature=1,
             )
             return response.choices[0].message.content.strip()
         except Exception as e:
@@ -148,26 +148,26 @@ class AIDialogueManager:
         # Simple fallback logic for Merchant Pete with emotion considerations
         if "Merchant Pete" in character_name:
             if emotion == "happy":
-                return "I can see you're in great spirits today! That positive energy will help your crops grow beautifully. What can I get you?"
+                return "Imagine being happy"
             elif emotion == "sad":
-                return "I notice you seem a bit down, friend. Remember, every capitalist has tough days, but I've got just the things to brighten your mood!"
+                return "Imagine being sad"
             elif emotion == "angry":
-                return "Take a deep breath, friend. Farming can be frustrating sometimes, but you're doing better than you think. Let me help you out."
+                return "Imagine being angry"
             elif emotion == "surprised":
-                return "You look amazed! There's always something wonderful to discover in farming. I've got some interesting items you might like!"
+                return "Imagine being suprised"
             elif emotion == "fearful":
-                return "Don't worry, you're safe here with me. Farming can feel overwhelming at first, but I'll help you get what you need."
+                return "Imagine being scared"
             elif "rich" in player_context:
-                return "Welcome back, esteemed capitalist! Your success is impressive. I have some premium items that might interest you."
+                return "Imagine not donating to charity"
             elif "new" in player_context or "starting" in player_context:
-                return "Hello there! New to farming? Don't worry, I've got just the tools and seeds to get you started on your adventure!"
+                return "Broke"
             else:
-                return "Welcome! It's a fine day for farming, isn't it? Let me know if you need anything."
+                return "Broke"
 
         # Generic fallback for any other NPC with basic emotion awareness
         if emotion == "happy":
-            return "I can see you're having a great day! How wonderful!"
+            return "Imagine being happy"
         elif emotion == "sad":
-            return "You seem a bit down, friend. I hope things look up soon!"
+            return "Imagine being sad"
         else:
-            return "Hello there! Nice to see you around the farm today."
+            return "Broke"
